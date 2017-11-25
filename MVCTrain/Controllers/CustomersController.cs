@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -9,16 +10,28 @@ namespace MVCTrain.Controllers
 {
     public class CustomersController : Controller
     {
+        private ApplicationDbContext _context;
+
+        public CustomersController()
+        {
+            _context = new ApplicationDbContext();
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
+
         public ActionResult Index()
         {
-            var customers = getCustomers();
+            var customers = _context.Customers.Include(x => x.MembershipType);
 
             return View(customers);
         }
 
         public ActionResult Details(int id)
         {
-            var customer = getCustomers().FirstOrDefault(x => x.Id == id);
+            var customer = _context.Customers.FirstOrDefault(x => x.Id == id);
             if (customer == null)
             {
                 return HttpNotFound();
@@ -27,18 +40,6 @@ namespace MVCTrain.Controllers
             {
                 return View(customer);
             }
-        }
-
-
-        private IEnumerable<Customer> getCustomers()
-        {
-            var customers = new List<Customer>
-            {
-                new Customer {Name = "Jhon Doe", Id = 1},
-                new Customer {Name = "Clark Kent", Id = 2}
-            };
-
-            return customers;
         }
     }
 }

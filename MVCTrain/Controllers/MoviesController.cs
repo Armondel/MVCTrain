@@ -12,35 +12,28 @@ namespace MVCTrain.App_Start
 {
     public class MoviesController : Controller
     {
-        // GET: Movies/Random
-        public ActionResult Random()
+        private ApplicationDbContext _context;
+
+        public MoviesController()
         {
-            var movie = new Movie { Name = "Shrek", Id = 1 };
-            var customers = new List<Customer>
-            {
-                new Customer {Name = "Customer 1"},
-                new Customer {Name = "Customer 2"}
-            };
+            _context = new ApplicationDbContext();
+        }
 
-            var viewModel = new RandomMovieViewModel
-            {
-                Movie = movie,
-                Customers = customers
-            };
-
-            return View(viewModel);
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
         }
 
         public ActionResult Index()
         {
-            var movies = GetMovies();
+            var movies = _context.Movies;
 
             return View(movies);
         }
 
         public ActionResult Details(int id)
         {
-            var movie = GetMovies().FirstOrDefault(x => x.Id.Equals(id));
+            var movie = _context.Movies.FirstOrDefault(x => x.Id.Equals(id));
             if (movie == null)
             {
                 return HttpNotFound();
@@ -49,16 +42,6 @@ namespace MVCTrain.App_Start
             {
                 return View(movie);
             }
-        }
-
-        private IEnumerable<Movie> GetMovies()
-        {
-            var movies = new List<Movie>
-            {
-                new Movie {Name = "Shrek", Id = 1},
-                new Movie {Name = "Witchers", Id = 2}
-            };
-            return movies;
         }
     }
 }
