@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
 using System.Security.Permissions;
 using System.Text;
 using System.Web;
@@ -26,14 +27,14 @@ namespace MVCTrain.App_Start
 
         public ActionResult Index()
         {
-            var movies = _context.Movies;
+            var movies = _context.Movies.Include(x => x.Genre);
 
             return View(movies);
         }
 
         public ActionResult Details(int id)
         {
-            var movie = _context.Movies.FirstOrDefault(x => x.Id.Equals(id));
+            var movie = _context.Movies.Include(x => x.Genre).FirstOrDefault(x => x.Id == id);
             if (movie == null)
             {
                 return HttpNotFound();
