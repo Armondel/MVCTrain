@@ -6,11 +6,16 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Details</h2>
+<h2>@Model.Name</h2>
 <table>
-    <thead>Customers</thead>
+    @if (@Model.BirthdayDate.HasValue)
+    {
+        <tr>
+            <td>@Model.BirthdayDate</td>
+        </tr>
+    }
     <tr>
-        <td>@Model.Name</td>
+        <td>@Model.MembershipType.Name</td>
     </tr>
 </table>
 

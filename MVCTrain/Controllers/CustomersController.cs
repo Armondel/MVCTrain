@@ -31,7 +31,7 @@ namespace MVCTrain.Controllers
 
         public ActionResult Details(int id)
         {
-            var customer = _context.Customers.FirstOrDefault(x => x.Id == id);
+            var customer = _context.Customers.Include(x => x.MembershipType).FirstOrDefault(x => x.Id == id);
             if (customer == null)
             {
                 return HttpNotFound();
