@@ -10,6 +10,7 @@ namespace MVCTrain.Models
     public class Genre
     {
         public byte Id { get; set; }
+
         [Required]
         public string GenreName { get; set; }
     }
