@@ -40,23 +40,20 @@ namespace MVCTrain.Controllers
             return View("CustomerForm", viewModel);
         }
 
-        public ActionResult Details(int id)
+        [HttpPost]
+        public ActionResult Save(Customer customer)
         {
-            var customer = _context.Customers.Include(x => x.MembershipType).FirstOrDefault(x => x.Id == id);
-            if (customer == null)
-            {
-                return HttpNotFound();
-            }
+            if (customer.Id == 0)
+                _context.Customers.Add(customer);
             else
             {
-                return View(customer);
+                var customerInDb = _context.Customers.Single(c => c.Id == customer.Id);
+                customerInDb.Name = customer.Name;
+                customerInDb.BirthdayDate = customer.BirthdayDate;
+                customerInDb.IsSubscribedToNewsletter = customer.IsSubscribedToNewsletter;
+                customerInDb.MembershipTypeId = customer.MembershipTypeId;
             }
-        }
-
-        [HttpPost]
-        public ActionResult Create(Customer customer)
-        {
-            _context.Customers.Add(customer);
+            
             _context.SaveChanges();
 
             return RedirectToAction("Index", "Customers");

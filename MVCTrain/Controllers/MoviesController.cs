@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
-using System.Security.Permissions;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using MVCTrain.Models;
 using MVCTrain.ViewModels;
@@ -32,17 +28,51 @@ namespace MVCTrain.App_Start
             return View(movies);
         }
 
-        public ActionResult Details(int id)
+        public ActionResult Edit(int id)
         {
             var movie = _context.Movies.Include(x => x.Genre).FirstOrDefault(x => x.Id == id);
             if (movie == null)
             {
                 return HttpNotFound();
             }
+            var movieViewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+            return View("MovieView", movieViewModel);
+        }
+
+        public ActionResult New()
+        {
+            var movieViewModel = new MovieFormViewModel
+            {
+                Genres = _context.Genres.ToList()
+            };
+
+            return View("MovieView", movieViewModel);
+        }
+
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0)
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
             else
             {
-                return View(movie);
+                var movieInDb = _context.Movies.First(m => m.Id == movie.Id);
+
+                movieInDb.Name = movie.Name;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+                movieInDb.GenreId = movie.GenreId;
+                movieInDb.NumberInStock = movie.NumberInStock;
             }
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Movies");
         }
     }
 }
