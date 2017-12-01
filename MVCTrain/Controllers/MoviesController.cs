@@ -47,6 +47,7 @@ namespace MVCTrain.App_Start
         {
             var movieViewModel = new MovieFormViewModel
             {
+                Movie = new Movie(),
                 Genres = _context.Genres.ToList()
             };
 
@@ -54,8 +55,18 @@ namespace MVCTrain.App_Start
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new MovieFormViewModel
+                {
+                    Movie = movie,
+                    Genres = _context.Genres.ToList()
+                };
+                return View("MovieView", viewModel);
+            }
             if (movie.Id == 0)
             {
                 movie.DateAdded = DateTime.Now;

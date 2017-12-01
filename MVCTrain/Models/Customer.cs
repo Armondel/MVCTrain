@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MVCTrain.Models.Validation;
 
 namespace MVCTrain.Models
 {
@@ -14,6 +15,7 @@ namespace MVCTrain.Models
 
         [Column(TypeName = "Date")]
         [Display(Name = "Date of Birth")]
+        [IsAtLeast18YearsOld]
         public DateTime? BirthdayDate { get; set; }
 
         public bool IsSubscribedToNewsletter { get; set; }

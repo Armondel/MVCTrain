@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using MVCTrain.Models.Validation;
 
 namespace MVCTrain.Models
 {
@@ -24,6 +25,7 @@ namespace MVCTrain.Models
         public DateTime DateAdded { get; set; }
 
         [Display(Name = "Number in Stock")]
+        [Range(1, 20)]
         public byte NumberInStock { get; set; }
     }
 }
