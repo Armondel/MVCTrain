@@ -34,3 +34,14 @@ textarea {
 .validation-summary-errors {
     color: red;
 }
+/*
+    Два нижнизх блока нужны, так как при использовании bootsrap и bootbox 
+    происходит какой-то инфернальный п!@#$ц
+*/
+.bootbox.modal.fade.bootbox-confirm.in {
+    opacity: 1;
+}
+
+.modal-backdrop.fade.in {
+    opacity: 0.5;
+}
