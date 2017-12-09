@@ -25,9 +25,7 @@ namespace MVCTrain.Controllers
 
         public ActionResult Index()
         {
-            var customers = _context.Customers.Include(x => x.MembershipType);
-
-            return View(customers);
+            return View();
         }
 
         public ActionResult New()
