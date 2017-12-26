@@ -4,13 +4,16 @@ using System.Linq;
 using System.Net;
 using System.Data.Entity;
 using System.Net.Http;
+using System.Web.Helpers;
 using System.Web.Http;
 using AutoMapper;
 using MVCTrain.DTO;
 using MVCTrain.Models;
+using MVCTrain.Models.Validation;
 
 namespace MVCTrain.Controllers.API
 {
+    [ApiAuthorize]
     public class MoviesController : ApiController
     {
         private readonly ApplicationDbContext _context;
@@ -19,9 +22,16 @@ namespace MVCTrain.Controllers.API
         {
             _context = new ApplicationDbContext();
         }
+
+
         // GET api/movies
         public IHttpActionResult GetMovies()
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new {message="Access Denied"});
+            }
+
             var movieDtos = _context.Movies
                 .Include(m => m.Genre)
                 .ToList()
@@ -32,6 +42,11 @@ namespace MVCTrain.Controllers.API
         // GET api/movies/1
         public IHttpActionResult GetMovie(int id)
         {
+            if (!User.Identity.IsAuthenticated)
+            {
+                return Json(new { message = "Access Denied" });
+            }
+
             var movie = _context.Movies.FirstOrDefault(c => c.Id == id);
 
             if (movie == null)
@@ -42,8 +57,14 @@ namespace MVCTrain.Controllers.API
 
         // POST api/movies
         [HttpPost]
+        [ApiAuthorize(Roles = "CanManageMovies")]
         public IHttpActionResult AddMovie(MovieDto movieDto)
         {
+            if (!User.IsInRole("CanManageMovies"))
+            {
+                return Json(new { message = "Access Denied" });
+            }
+
             if (!ModelState.IsValid)
                 return BadRequest();
             var movie = Mapper.Map<MovieDto, Movie>(movieDto);
@@ -59,6 +80,7 @@ namespace MVCTrain.Controllers.API
 
         // PUT api/movies/1
         [HttpPut]
+        [ApiAuthorize(Roles = "CanManageMovies")]
         public void UpdateMovie(int id, MovieDto movieDto)
         {
             if (!ModelState.IsValid)
@@ -77,6 +99,7 @@ namespace MVCTrain.Controllers.API
 
         // DELETE api/movies/1
         [HttpDelete]
+        [ApiAuthorize(Roles = "CanManageMovies")]
         public void DeleteMovie(int id)
         {
             var movieInDb = _context.Movies.FirstOrDefault(m => m.Id == id);

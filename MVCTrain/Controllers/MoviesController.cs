@@ -1,15 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Data.Entity;
+using System.Linq;
 using System.Web.Mvc;
 using MVCTrain.Models;
 using MVCTrain.ViewModels;
 
-namespace MVCTrain.App_Start
+namespace MVCTrain.Controllers
 {
     public class MoviesController : Controller
     {
-        private ApplicationDbContext _context;
+        private readonly ApplicationDbContext _context;
 
         public MoviesController()
         {
@@ -23,11 +23,10 @@ namespace MVCTrain.App_Start
 
         public ActionResult Index()
         {
-            var movies = _context.Movies.Include(x => x.Genre);
-
-            return View(movies);
+            return User.IsInRole(RoleName.CanManageMovies) ? View("List") : View("ReadOnlyList");
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult Edit(int id)
         {
             var movie = _context.Movies.Include(x => x.Genre).FirstOrDefault(x => x.Id == id);
@@ -43,6 +42,7 @@ namespace MVCTrain.App_Start
             return View("MovieView", movieViewModel);
         }
 
+        [Authorize(Roles = RoleName.CanManageMovies)]
         public ActionResult New()
         {
             var movieViewModel = new MovieFormViewModel
@@ -55,6 +55,7 @@ namespace MVCTrain.App_Start
         }
 
         [HttpPost]
+        [Authorize(Roles = RoleName.CanManageMovies)]
         [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
